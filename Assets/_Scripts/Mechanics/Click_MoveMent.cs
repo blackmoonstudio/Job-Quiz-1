@@ -34,19 +34,14 @@ public class Click_MoveMent : MonoBehaviour
     private void Move()
     {
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit[] hits = Physics.RaycastAll(ray.origin, ray.direction, Mathf.Infinity, Mask).OrderBy(h => h.distance).ToArray();
-        for (int i = 0; i < hits.Length; i++)
+        RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Infinity, Mask)
+            .Where(hit => hit.transform.CompareTag("Floor"))
+            .OrderBy(hit => hit.distance)
+            .ToArray();
+
+        if (hits.Length > 0)
         {
-            if (hits[i].transform.tag == "Floor")
-            {
-                agent.SetDestination(hits[i].point);
-                break;
-            }
+            agent.SetDestination(hits[0].point);
         }
-        //if (Physics.Raycast(ray, out RaycastHit hit,Mask))
-        //{
-        //    Debug.Log("Hit" + hit.transform.gameObject);
-        //    agent.SetDestination(hit.point);
-        //}
     }
 }

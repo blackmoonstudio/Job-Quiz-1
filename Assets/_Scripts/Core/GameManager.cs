@@ -118,34 +118,26 @@ public class GameManager : MonoBehaviour
     }
 
     // This method will be called when the event is triggered
-    private void HandleTriggerEntered(Collider other,string Pos)
+    private void HandleTriggerEntered(Collider other, string pos)
     {
-       
-        Debug.Log($"{Pos} {other.gameObject.name}");
+        Debug.Log($"{pos} {other.gameObject.name}");
+
         if (gameData.GameView != GameData.GameViewType.Click)
             return;
 
-        if(Pos == "SW")
-        {
-            ChangeCamera(3);
-        }
-        if(Pos == "SE")
-        {
-            ChangeCamera(4);
-        }
-        if (Pos == "NW")
-        {
-            ChangeCamera(5);
-        }
-        if (Pos == "NE")
-        {
-            ChangeCamera(6);
-        }
-        if(Pos == "UP")
-        {
-            ChangeCamera(1);
-        }
+        var cameraMappings = new Dictionary<string, int>
+    {
+        { "SW", 3 },
+        { "SE", 4 },
+        { "NW", 5 },
+        { "NE", 6 },
+        { "UP", 1 }
+    };
 
+        if (cameraMappings.TryGetValue(pos, out int cameraIndex))
+        {
+            ChangeCamera(cameraIndex);
+        }
     }
     void InitDropDown()
     {
@@ -161,24 +153,20 @@ public class GameManager : MonoBehaviour
     }
     public void ChangeDropDownValue()
     {
-        switch (dropdown.value)
-        {
-            case 0:
-                //WASD
-                gameData.GameView = GameData.GameViewType.WASD;
-                break;
+        var gameViewMappings = new Dictionary<int, GameData.GameViewType>
+    {
+        { 0, GameData.GameViewType.WASD },
+        { 1, GameData.GameViewType.Click },
+        { 2, GameData.GameViewType.Stick }
+    };
 
-            case 1:
-                //Click
-                gameData.GameView = GameData.GameViewType.Click;
-                break; 
-            case 2:
-                //Game Stick
-                gameData.GameView = GameData.GameViewType.Stick;
-                break;
-            default:
-                gameData.GameView = GameData.GameViewType.WASD;
-                break;
+        if (gameViewMappings.TryGetValue(dropdown.value, out GameData.GameViewType gameView))
+        {
+            gameData.GameView = gameView;
+        }
+        else
+        {
+            gameData.GameView = GameData.GameViewType.WASD;
         }
 
         ActiveRequiredComponents(gameData);
